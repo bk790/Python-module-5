@@ -110,19 +110,22 @@ When passing objects to functions, the function can either modify the existing o
 
 ### Pure Functions
 
-- Return a brand-new object.
-- Do not alter input parameters.
-- No side effects.
+* Return a brand-new object.
+* Do not alter input parameters.
+* No side effects.
 
 ### Modifiers
 
-- Modify the internal state of objects passed to them.
+* Modify the internal state of objects passed to them.
 
 ```python
 class Time:
     def __init__(self, h, m):
         self.hours = h
         self.minutes = m
+    
+    def __str__(self):
+        return f"{self.hours:02d}:{self.minutes:02d}"
 
 # Modifier
 def add_minutes_modifier(t, mins):
@@ -139,9 +142,27 @@ def add_minutes_pure(t, mins):
     new_m = new_m % 60
 
     return Time(new_h, new_m)
+
+# Demonstration
+if __name__ == "__main__":
+    # Modifier Test
+    t1 = Time(9, 30)
+    print(f"Original: {t1}")
+    add_minutes_modifier(t1, 45)
+    print(f"Modified: {t1}")
+
+    # Pure Function Test
+    t2 = Time(9, 30)
+    print(f"Original: {t2}")
+    t3 = add_minutes_pure(t2, 45)
+    print(f"Pure Result: {t3}")
+    print(f"Original after Pure: {t2}")
+
 ```
 
 ---
+
+
 
 ## 1.5 Operator Overloading
 
@@ -180,9 +201,9 @@ print("Cumulative Sum:", total)
 
 ## 1.6 Polymorphism and Duck Typing
 
-Polymorphism refers to a method or operator's ability to behave differently depending on the object it is acting upon.
+**Polymorphism** is the ability of different classes to respond to the same method call in their own specific way. This allows a single interface to represent different underlying forms (data types).
 
-Python strongly embraces **Duck Typing**.
+**Duck Typing** is a specific Pythonic application of polymorphism. It follows the philosophy: *"If it walks like a duck and quacks like a duck, then it must be a duck."* In practice, this means Python does not care about the actual **type** of the object; it only cares whether the object **supports the methods or attributes** being called.
 
 ```python
 class Rectangle:
@@ -194,14 +215,24 @@ class Circle:
         print("Drawing a Circle")
 
 # Polymorphic function
+# It doesn't check the type; it relies on 'Duck Typing' 
+# by assuming any object passed will have a .draw() method.
 def render_shape(shape):
     shape.draw()
 
+# Creating a list of different objects that share the same method name
 shapes = [Rectangle(), Circle()]
 
 for s in shapes:
+    # Polymorphism: The same call 's.draw()' behaves 
+    # differently depending on the specific class of 's'.
     render_shape(s)
+
 ```
+
+---
+
+
 
 ---
 
@@ -257,45 +288,49 @@ finally:
 
 ## 2.3 Assertion and Raising Exceptions
 
-### Assertion
+### Assertions
 
-A debugging tool that evaluates a condition.
-
-```python
-assert condition, "Error Message"
-```
+An **Assertion** is a debugging aid that tests a condition. If the condition evaluates to `True`, the program continues; if `False`, it raises an `AssertionError`. Assertions are typically used to verify internal invariants and are often disabled in production code optimization.
 
 ### Raising Exceptions
 
-Used to manually trigger exceptions.
+**Raising Exceptions** is the mechanism used to signal that an exceptional situation (an error) has occurred during program execution. Unlike assertions, raising exceptions is a fundamental part of flow control in production code to handle invalid data or logic states.
 
 ```python
 def calculate_discount(price, discount_percent):
-
-    # Assertion
+    # Assertion: Used for internal debugging to verify state
     assert price >= 0, "Price cannot be negative"
 
-    # Raise
+    # Raising Exception: Used for production-level error handling
     if discount_percent < 0 or discount_percent > 100:
-        raise ValueError(
-            "Discount must be between 0 and 100"
-        )
+        raise ValueError("Discount must be between 0 and 100")
 
-    return price - (
-        price * (discount_percent / 100)
-    )
+    return price - (price * (discount_percent / 100))
 
+# Handling Errors
 try:
+    # This will trigger the ValueError
     final_price = calculate_discount(1000, 150)
+    print(f"Final Price: {final_price}")
 
 except ValueError as e:
     print(f"Logic Error: {e}")
 
 except AssertionError as e:
     print(f"System Error: {e}")
+
+```
+
+### Expected Output
+
+```text
+Logic Error: Discount must be between 0 and 100
+
 ```
 
 ---
+
+
 
 # 3. Practice Questions and Examples
 
